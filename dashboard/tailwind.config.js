@@ -1,3 +1,4 @@
+const colors = require('tailwindcss/colors')
 const palette = require('./palette')
 
 /** @type {import('tailwindcss').Config} */
