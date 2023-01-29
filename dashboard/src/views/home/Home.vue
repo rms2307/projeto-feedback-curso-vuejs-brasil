@@ -11,6 +11,9 @@ import CustomHeader from './CustomHeader.vue'
 import Contact from './Contact.vue'
 import { useRouter } from 'vue-router'
 import { onMounted } from '@vue/runtime-core'
+import useModal from '../../hooks/useModal'
+
+const modal = useModal()
 
 export default {
   components: { CustomHeader, Contact },
@@ -24,7 +27,9 @@ export default {
       }
     })
 
-    function handleLogin () {}
+    function handleLogin () {
+      modal.open({ component: 'ModalLogin' })
+    }
 
     function handleAccountCreate () {}
 

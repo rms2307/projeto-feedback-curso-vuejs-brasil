@@ -19,11 +19,13 @@
 
 <script>
 import { reactive } from "@vue/reactivity";
+import useModal from "../../hooks/useModal";
 
 const DEFAULT_WIDTH = "w-3/4 lg:w-1/3";
 
 export default {
   setup() {
+    const modal = useModal();
     const state = reactive({
       isActive: false,
       component: {},
