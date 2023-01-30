@@ -12,11 +12,11 @@ export default function useModal () {
   }
 
   function listen (fn) {
-    bus.emit(EVENT_NAME, fn)
+    bus.on(EVENT_NAME, fn)
   }
 
   function off (fn) {
-    bus.emit(EVENT_NAME, fn)
+    bus.off(EVENT_NAME, fn)
   }
 
   return { open, close, listen, off }

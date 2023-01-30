@@ -2,15 +2,16 @@
   <teleport to="body">
     <div
       v-if="state.isActive"
-      class="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-full bg-block bg-opsvity-50"
-      @click="handleModelToogle({ status: false })"
-    ></div>
-    <div class="fixed mx-10">
-      <div
-        class="flex flex-col overflow-hidden bg-write rounded-lg animate__animated anomate_fadeInDown__faster"
-      >
-        <div class="flex flex-col px-12 py-10 bg-write">
-          <component :is="state.component" />
+      class="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black bg-opacity-50"
+      @click="handleModalToggle({ status: false })"
+    >
+      <div class="fixed mx-10" :class="state.width" @click.stop>
+        <div
+          class="flex flex-col overflow-hidden bg-white rounded-lg animate__animated animate__fadeInDown animate__faster"
+        >
+          <div class="flex flex-col px-12 py-10 bg-white">
+            <component :is="state.component" />
+          </div>
         </div>
       </div>
     </div>
@@ -18,28 +19,67 @@
 </template>
 
 <script>
-import { reactive } from "@vue/reactivity";
-import useModal from "../../hooks/useModal";
+import { reactive } from '@vue/reactivity'
+import useModal from '../hooks/useModal'
+import {
+  defineAsyncComponent,
+  onBeforeUnmount,
+  onMounted
+} from '@vue/runtime-core'
 
-const DEFAULT_WIDTH = "w-3/4 lg:w-1/3";
+const ModalLogin = defineAsyncComponent(() =>
+  import('../components/ModalLogin.vue')
+)
+
+const ModalAccountCreate = defineAsyncComponent(() =>
+  import('../components/ModalAccountCreate.vue')
+)
+
+const DEFAULT_WIDTH = 'w-3/4 lg:w-1/3'
 
 export default {
-  setup() {
-    const modal = useModal();
+  components: {
+    ModalLogin,
+    ModalAccountCreate
+  },
+  setup () {
+    const modal = useModal()
     const state = reactive({
       isActive: false,
       component: {},
       props: {},
-      width: DEFAULT_WIDTH,
-    });
+      width: DEFAULT_WIDTH
+    })
 
-    function handleModelToogle({ status }) {}
+    onMounted(() => {
+      modal.listen(handleModalToggle)
+    })
+
+    onBeforeUnmount(() => {
+      modal.off(handleModalToggle)
+    })
+
+    function handleModalToggle (payload) {
+      if (payload.status) {
+        console.log(payload)
+        state.component = payload.component
+        state.props = payload.props
+        state.width = payload.width || DEFAULT_WIDTH
+      } else {
+        state.component = {}
+        state.props = {}
+        state.width = DEFAULT_WIDTH
+      }
+
+      state.isActive = payload.status
+    }
 
     return {
       state,
-    };
-  },
-};
+      handleModalToggle
+    }
+  }
+}
 </script>
 
 <style></style>
