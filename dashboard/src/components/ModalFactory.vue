@@ -19,67 +19,66 @@
 </template>
 
 <script>
-import { reactive } from '@vue/reactivity'
-import useModal from '../hooks/useModal'
+import { reactive } from "@vue/reactivity";
+import useModal from "../hooks/useModal";
 import {
   defineAsyncComponent,
   onBeforeUnmount,
-  onMounted
-} from '@vue/runtime-core'
+  onMounted,
+} from "@vue/runtime-core";
 
 const ModalLogin = defineAsyncComponent(() =>
-  import('../components/ModalLogin.vue')
-)
+  import("../components/ModalLogin.vue")
+);
 
 const ModalAccountCreate = defineAsyncComponent(() =>
-  import('../components/ModalAccountCreate.vue')
-)
+  import("../components/ModalAccountCreate.vue")
+);
 
-const DEFAULT_WIDTH = 'w-3/4 lg:w-1/3'
+const DEFAULT_WIDTH = "w-3/4 lg:w-1/3";
 
 export default {
   components: {
     ModalLogin,
-    ModalAccountCreate
+    ModalAccountCreate,
   },
-  setup () {
-    const modal = useModal()
+  setup() {
+    const modal = useModal();
     const state = reactive({
       isActive: false,
       component: {},
       props: {},
-      width: DEFAULT_WIDTH
-    })
+      width: DEFAULT_WIDTH,
+    });
 
     onMounted(() => {
-      modal.listen(handleModalToggle)
-    })
+      modal.listen(handleModalToggle);
+    });
 
     onBeforeUnmount(() => {
-      modal.off(handleModalToggle)
-    })
+      modal.off(handleModalToggle);
+    });
 
-    function handleModalToggle (payload) {
+    function handleModalToggle(payload) {
       if (payload.status) {
-        console.log(payload)
-        state.component = payload.component
-        state.props = payload.props
-        state.width = payload.width || DEFAULT_WIDTH
+        state.component = payload.component;
+        state.props = payload.props;
+        state.width = payload.width || DEFAULT_WIDTH;
       } else {
-        state.component = {}
-        state.props = {}
-        state.width = DEFAULT_WIDTH
+        state.component = {};
+        state.props = {};
+        state.width = DEFAULT_WIDTH;
       }
 
-      state.isActive = payload.status
+      state.isActive = payload.status;
     }
 
     return {
       state,
-      handleModalToggle
-    }
-  }
-}
+      handleModalToggle,
+    };
+  },
+};
 </script>
 
 <style></style>
