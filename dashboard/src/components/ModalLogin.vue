@@ -118,7 +118,7 @@ export default {
           window.localStorage.setItem("token", data.token);
           state.isLoading = false;
           router.push({
-            name: "Feedbacks",
+            name: "Feedback",
           });
           modal.close();
           return;

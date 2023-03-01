@@ -143,7 +143,7 @@ export default {
 
       if (!errors) {
         window.localStorage.setItem("token", data.token);
-        router.push({ name: "Feedbacks" });
+        router.push({ name: "Feedback" });
         modal.close();
       }
 
