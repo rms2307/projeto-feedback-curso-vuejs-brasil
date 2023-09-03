@@ -65,85 +65,84 @@
 </template>
 
 <script>
-import { reactive } from "@vue/reactivity";
-import useModal from "../hooks/useModal";
-import { useField } from "vee-validate";
-import { useToast } from "vue-toastification";
-import Icon from "./Icon.vue";
+import { reactive } from '@vue/reactivity'
+import useModal from '../hooks/useModal'
+import { useField } from 'vee-validate'
+import { useToast } from 'vue-toastification'
+import Icon from './Icon.vue'
 import {
   validateEmptyAndLength3,
-  validateEmptyAndEmail,
-} from "../utils/validators";
-import services from "../services";
-import { useRouter } from "vue-router";
+  validateEmptyAndEmail
+} from '../utils/validators'
+import services from '../services'
+import { useRouter } from 'vue-router'
 
 export default {
   components: { Icon },
-  setup() {
-    const router = useRouter();
-    const modal = useModal();
-    const toast = useToast();
+  setup () {
+    const router = useRouter()
+    const modal = useModal()
+    const toast = useToast()
 
     const { value: emailValue, errorMessage: emailErrorMessage } = useField(
-      "email",
+      'email',
       validateEmptyAndEmail
-    );
+    )
     const { value: passwordValue, errorMessage: passwordErrorMessage } =
-      useField("password", validateEmptyAndLength3);
+      useField('password', validateEmptyAndLength3)
 
     const state = reactive({
       hasErrors: false,
       isLoading: false,
       email: {
         value: emailValue,
-        errorMessage: emailErrorMessage,
+        errorMessage: emailErrorMessage
       },
       password: {
         value: passwordValue,
-        errorMessage: passwordErrorMessage,
-      },
-    });
+        errorMessage: passwordErrorMessage
+      }
+    })
 
-    async function handleSubmit() {
+    async function handleSubmit () {
       try {
-        toast.clear();
-        state.isLoading = true;
+        toast.clear()
+        state.isLoading = true
 
         const { data, errors } = await services.authService.login({
           email: state.email.value,
-          password: state.password.value,
-        });
+          password: state.password.value
+        })
 
         if (!errors) {
-          window.localStorage.setItem("token", data.token);
-          state.isLoading = false;
+          window.localStorage.setItem('token', data.token)
+          state.isLoading = false
           router.push({
-            name: "Feedback",
-          });
-          modal.close();
-          return;
+            name: 'Feedback'
+          })
+          modal.close()
+          return
         }
 
-        if (errors.status === 404) toast.error("E-mail não encontrado.");
-        if (errors.status === 401) toast.error("E-mail e/ou senha inválidos.");
-        if (errors.status === 400)
-          toast.error("Ocorreu um erro ao fazer login.");
+        if (errors.status === 404) toast.error('E-mail não encontrado.')
+        if (errors.status === 401) toast.error('E-mail e/ou senha inválidos.')
+        if (errors.status === 400) { toast.error('Ocorreu um erro ao fazer login.') }
 
-        state.isLoading = false;
+        state.isLoading = false
       } catch (error) {
-        state.isLoading = false;
-        state.hasErrors = !!error;
-        toast.error("Sistema indisponível, tente novamente mais tarde.");
+        state.isLoading = false
+        state.hasErrors = !!error
+        toast.error('Sistema indisponível, tente novamente mais tarde.')
       }
     }
 
     return {
       state,
       close: modal.close,
-      handleSubmit,
-    };
-  },
-};
+      handleSubmit
+    }
+  }
+}
 </script>
 
 <style></style>

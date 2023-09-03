@@ -12,11 +12,11 @@
 </template>
 
 <script>
-import HeaderLogged from "../../components/HeaderLogged.vue";
+import HeaderLogged from '../../components/HeaderLogged.vue'
 
 export default {
-  components: { HeaderLogged },
-};
+  components: { HeaderLogged }
+}
 </script>
 
 <style></style>

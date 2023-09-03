@@ -31,22 +31,22 @@
 </template>
 
 <script>
-import { useRouter } from "vue-router";
-import { computed } from "vue";
-import useStore from "../hooks/useStore";
-import { cleanCurrentUser } from "../store/user";
+import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import useStore from '../hooks/useStore'
+import { cleanCurrentUser } from '../store/user'
 
 export default {
-  setup() {
-    const router = useRouter();
-    const store = useStore("User");
+  setup () {
+    const router = useRouter()
+    const store = useStore('User')
 
     const logoutLabel = computed(() => {
       if (!store?.currentUser?.name) {
-        return "...";
+        return '...'
       }
-      return `${store?.currentUser?.name} (sair)`;
-    });
+      return `${store?.currentUser?.name} (sair)`
+    })
 
     function handleLogout () {
       window.localStorage.removeItem('token')
@@ -57,10 +57,10 @@ export default {
     return {
       router,
       logoutLabel,
-      handleLogout,
-    };
-  },
-};
+      handleLogout
+    }
+  }
+}
 </script>
 
 <style></style>
