@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
+const jwt = require('jsonwebtoken');
 
 const FEEDBACK_TYPES = {
   ISSUE: 'ISSUE',
@@ -7,6 +8,23 @@ const FEEDBACK_TYPES = {
 }
 
 function CreateFeedbackHandler (db) {
+  function getUserId(authorizationHeader) {
+    try {      
+      if (!authorizationHeader) {
+        ctx.status = 401;
+        ctx.body = { error: 'Unauthorized' };
+        return;
+      }
+      const [, token] = authorizationHeader.split(' ');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const { id } = decoded
+
+      return id;
+    } catch (error) {
+      throw new Error('Token inválido');
+    }
+  }
+
   async function create (ctx) {
     const {
       type,
@@ -77,12 +95,13 @@ function CreateFeedbackHandler (db) {
     const { type } = ctx.query
     let offset = ctx.query.offset ? Number(ctx.query.offset) : 0
     let limit = ctx.query.limit ? Number(ctx.query.limit) : 5
+    const id = getUserId(ctx.headers.authorization);
 
     let [
       user,
       feedbacks
     ] = await Promise.all([
-      db.readOneById('users', ctx.state.user.id),
+      db.readOneById('users', id),
       db.readAll('feedbacks')
     ])
 
@@ -122,11 +141,13 @@ function CreateFeedbackHandler (db) {
 
   async function getSummary (ctx) {
     const { type } = ctx.query
+    const id = getUserId(ctx.headers.authorization);
+    
     let [
       user,
       feedbacks
     ] = await Promise.all([
-      db.readOneById('users', ctx.state.user.id),
+      db.readOneById('users', id),
       db.readAll('feedbacks')
     ])
 

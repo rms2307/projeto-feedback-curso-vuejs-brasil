@@ -1,8 +1,10 @@
 const { v4: uuidv4 } = require('uuid')
+const jwt = require('jsonwebtoken');
 
 function CreateUserHandler (db) {
   async function getLoggerUser (ctx) {
-    const { id } = ctx.state.user
+    const id = getUserId(ctx.headers.authorization);
+
     const user = await db.readOneById('users', id)
     if (!user) {
       ctx.status = 404
@@ -22,7 +24,7 @@ function CreateUserHandler (db) {
 
   async function generateApiKey (ctx) {
     const apiKey = uuidv4()
-    const { id } = ctx.state.user
+    const id = getUserId(ctx.headers.authorization);
 
     const user = await db.readOneById('users', id)
     const updated = await db.update('users', id, {
@@ -35,6 +37,23 @@ function CreateUserHandler (db) {
     }
     ctx.status = 422
     ctx.body = { error: 'User not updated' }
+  }
+
+  function getUserId(authorizationHeader) {
+    try {      
+      if (!authorizationHeader) {
+        ctx.status = 401;
+        ctx.body = { error: 'Unauthorized' };
+        return;
+      }
+      const [, token] = authorizationHeader.split(' ');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const { id } = decoded
+
+      return id;
+    } catch (error) {
+      throw new Error('Token inválido');
+    }
   }
 
   async function create (ctx) {
